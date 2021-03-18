@@ -1,6 +1,6 @@
 import Button from 'antd/lib/button';
 import Table from 'antd/lib/table/Table';
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import "../App.scss"
 import CreateForm from './createForm';
 import { UserInfoDetails } from './interface';
@@ -11,26 +11,27 @@ import { Alert } from 'antd';
 const ToDo = () => {
     const contextValues = useContext(UserContext);
     let list: UserInfoDetails[] = contextValues.items;
-    let _userInfoDetails: UserInfoDetails[] = [];
-    const [showAlert, setShowAlert] = useState(false);
+    let [_userInfoDetails, setUserState]: any[] = useState([]);
     const [successMessage, setSuccessMessage] = useState<string>();
-    if(list) {
-        for(let i=0; i< list.length;i++) {
-            let newObj:UserInfoDetails = {
-                ...list[i],
-                taskId: 'TT-00' + i,
-                status: 'todo',
-                createdOn:  getFormattedDate(new Date()),
-            };
-            _userInfoDetails.push(newObj);
-        }
-    }
-    const onClick = (values: any) => {
-        _userInfoDetails.forEach((items,index) => {
-            if(items.taskId === values.record.taskId) {
-                _userInfoDetails.splice(index,1);
+    const [showAlert, setShowAlert] = useState(false);
+    useEffect(() => {
+        console.log(_userInfoDetails);
+        let items = [];
+        if(list) {
+            for(let i=0; i< list.length;i++) {
+                let newObj:UserInfoDetails = {
+                    ...list[i],
+                    taskId: 'TT-00' + i,
+                    status: 'todo',
+                    createdOn:  getFormattedDate(new Date()),
+                };
+                items.push(newObj);
             }
-        })
+            setUserState(items);
+        }
+    }, [list]);
+    const onClick = (values: any) => {
+        setUserState(_userInfoDetails.filter((item: any) => item.taskId !== values.record.taskId));
         contextValues.updateInprogressItems({
             ...values
         });
@@ -38,11 +39,9 @@ const ToDo = () => {
         setShowAlert(true);
     }
     const onDelete = (values: any) => {
-        _userInfoDetails.forEach((items,index) => {
-            if(items.taskId === values.record.taskId) {
-                _userInfoDetails.splice(index,1);
-            }
-        })
+        setUserState(_userInfoDetails.filter((item: any) => item.taskId !== values.record.taskId));
+        setSuccessMessage('Task has been successfully deleted.');
+        setShowAlert(true);
     }
     const columns = [
         {

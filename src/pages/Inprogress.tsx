@@ -1,21 +1,35 @@
 import { Alert, Button } from 'antd';
 import Table from 'antd/lib/table/Table';
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import "../App.scss"
 import { UserInfoDetails } from './interface';
 import UserContext from './UserContext';
+import getFormattedDate from './commonFunction';
 function Inprogress() {
     const [successMessage, setSuccessMessage] = useState<string>();
     const contextValues = useContext(UserContext);
     const [showAlert, setShowAlert] = useState(false);
+    
     debugger;
     let list: UserInfoDetails[] = contextValues.inprogressItems;
-    const onClick = (values: any) => {
-        list.forEach((items,index) => {
-            if(items.taskId === values.record.taskId) {
-                list.splice(index,1);
+    let [_userInfoDetails, setUserState]: any[] = useState([]);
+    useEffect(() => {
+        console.log(_userInfoDetails);
+        let items = [];
+        if(list) {
+            for(let i=0; i< list.length;i++) {
+                let newObj:UserInfoDetails = {
+                    ...list[i],
+                    status: 'inprogress',
+                    createdOn:  getFormattedDate(new Date()),
+                };
+                items.push(newObj);
             }
-        })
+            setUserState(items);
+        }
+    }, [list]);
+    const onClick = (values: any) => {
+        setUserState(_userInfoDetails.filter((item: any) => item.taskId !== values.record.taskId));
         contextValues.updateDoneItems({
             ...values
         });
@@ -23,14 +37,9 @@ function Inprogress() {
         setShowAlert(true);
     }
     const onDelete = (values: any) => {
-        list.forEach((items,index) => {
-            if(items.taskId === values.record.taskId) {
-                list.splice(index,1);
-            }
-        })
-        contextValues.updateDoneItems({
-            ...values
-        });
+        setUserState(_userInfoDetails.filter((item: any) => item.taskId !== values.record.taskId));
+        setSuccessMessage('Task has been successfully deleted.');
+        setShowAlert(true);
     }
     const columns = [
         {
@@ -74,7 +83,7 @@ function Inprogress() {
                 <p>List of all In Progress List</p>
                 { showAlert && 
                  <Alert message={successMessage}  type="success" showIcon />}
-                <Table style={{marginBottom: '100%'}} columns={columns} dataSource={list} />
+                <Table style={{marginBottom: '100%'}} columns={columns} dataSource={_userInfoDetails} />
             </span>
         </div >
     )
