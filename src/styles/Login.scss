@@ -1,0 +1,31 @@
+#components-form-demo-normal-login .login-form {
+max-width: 300px;
+}
+#components-form-demo-normal-login .login-form-forgot {
+float: right;
+}
+#components-form-demo-normal-login .ant-col-rtl .login-form-forgot {
+float: left;
+}
+#components-form-demo-normal-login .login-form-button {
+width: 100%;
+}
+.site-card-border-less-wrapper {
+    padding: 300px;
+    background: #FFFFFFFF;
+  }
+.ant-card {
+background: #ABD6DFFF!important;
+}
+.ant-layout-sider {
+    background: #ABD6DFFF!important;
+}  
+.ant-layout-header  {
+    padding:  10px!important;
+    background: #46adc2!important;
+}  
+.ant-typography {
+    padding-top: 10px!important;
+    font-weight: bolder!important;
+    font-family: cursive!important;
+}
